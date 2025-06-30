@@ -8,7 +8,7 @@ const Index = () => {
   useEffect(() => {
     setTimeout(() => {
       router.push('/welcome')
-    }, 1000);
+    }, 2000);
   }, []);
 
   return (
@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral900,
   },
   logo:{
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
     marginBottom: 20,
   }
 })
