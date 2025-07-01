@@ -5,14 +5,16 @@ import Typo from "@/components/Typo";
 import { verticalScale } from "@/utils/styling";
 import { colors, spacingX, spacingY } from "@/constants/theme";
 import Button from "@/components/Button";
-import  Animated, {FadeIn} from "react-native-reanimated";
+import  Animated, {FadeIn, FadeInDown} from "react-native-reanimated";
+import { useRouter } from "expo-router";
 const Welcome = () => {
+    const router = useRouter();
   return (
     <ScreenWrapper>
       <View style={styles.container}>
         <View>
-          <TouchableOpacity style={styles.loginButton}>
-            <Typo color="white" fontWeight={500}>
+          <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/login")}>
+            <Typo color="white" fontWeight={600}>
               Sign In
             </Typo>
           </TouchableOpacity>
@@ -25,14 +27,14 @@ const Welcome = () => {
         </View>
         {/* footer */}
         <View style={styles.footer}>
-          <View style={{ alignItems: "center" }}>
+          <Animated.View style={{ alignItems: "center" }} entering={FadeInDown.duration(1000).damping(5)}>
             <Typo size={30} fontWeight={"800"}>
               Always take control
             </Typo>
             <Typo size={30} fontWeight={"800"}>
               of your finances
             </Typo>
-          </View>
+          </Animated.View>
           <View style={{ alignItems: "center", gap: 2 }}>
             <Typo size={17} color={colors.textLight}>
               Finances must be arranged to set a better
@@ -41,9 +43,9 @@ const Welcome = () => {
               lifestyle in future
             </Typo>
           </View>
-          <View style={styles.buttonContainer}>{/* button */}
+          <Animated.View entering={FadeInDown.duration(300).damping(10)} style={styles.buttonContainer}>
             <Button onPress={() => {}}><Typo color="black" fontWeight={500}>Get Started</Typo></Button>
-          </View>
+          </Animated.View>
         </View>
       </View>
     </ScreenWrapper>
