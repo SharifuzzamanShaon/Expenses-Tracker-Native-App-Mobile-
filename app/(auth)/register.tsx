@@ -5,41 +5,40 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useRef } from "react";
+import React from "react";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Typo from "@/components/Typo";
 import BackButton from "@/components/BackButton";
 import { verticalScale } from "@/utils/styling";
 import { colors, spacingX, spacingY } from "@/constants/theme";
 import Input from "@/components/Input";
+import Button from "@/components/Button";
 import { useRouter } from "expo-router";
-import {checkLoginFormData} from "@/utils/formValidator";
-import Button from "@/components/Button"; // Assuming you have a Button component
-const Login = () => {
+// eslint-disable-next-line import/no-unresolved
+import  {checkRegFormData}  from "../../utils/formValidator"; // Assuming you have a utility function for form validation 
+const Register = () => {
   // const email = useRef("");
   // const password = useRef("");
   const router = useRouter();
-  const [loginInfo, setLoginInfo] = React.useState({ email: "", password: "" });
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [loginInfo, setLoginInfo] = React.useState({ email: "", username: "", password: "" });
+  const [loading, setLoading] = React.useState(false);
   const handleSubmit = async () => {
-    setIsLoading(true);
-    const errors = checkLoginFormData(loginInfo);
+    const errors = checkRegFormData(loginInfo);
     if (errors.length > 0) {
-      setIsLoading(false);
       Alert.alert(errors[0]);
       return;
     } else {
-      console.log("Login Details", {
+      console.log("Register Details", {
         email: loginInfo.email,
+        username: loginInfo.username,
         password: loginInfo.password,
       });
 
       Alert.alert(
-        "Login Successful",
-        `Email: ${loginInfo.email}, Password: ${loginInfo.password}`
+        "Register Successful",
+        `Email: ${loginInfo.email}, Username: ${loginInfo.username}, Password: ${loginInfo.password}`
       );
     }
-    setIsLoading(false);
   };
   return (
     <ScreenWrapper>
@@ -55,35 +54,37 @@ const Login = () => {
           Hey,
         </Typo>
         <Typo size={30} fontWeight={"800"}>
-          Welcome Back
+          Let&apos;s Get You Started
         </Typo>
         {/* form */}
         <View style={styles.form}>
           <Typo size={16} color={colors.textLighter}>
-            Login now to track all your expenses
+            Register now to track all your expenses
           </Typo>
           {/* /* input */}
-          <Input
+            <Input
             placeholder="Enter Your Email"
             onChangeText={(text) => setLoginInfo({ ...loginInfo, email: text })}
+          ></Input>
+          <Input
+            placeholder="Enter Your Username"
+            onChangeText={(text) => setLoginInfo({ ...loginInfo, username: text })}
           ></Input>
           <Input
             placeholder="Enter Your Password"
             secureTextEntry={true}
             onChangeText={(text) => setLoginInfo({ ...loginInfo, password: text })}
           ></Input>
-          <Typo size={14} color={colors.text} style={{ alignSelf: "flex-end" }}>
-            Forgot Password?
-          </Typo>
+          {/* <Typo size={14} color={colors.text} style={{ alignSelf: "flex-end" }}>
+          ..
+          </Typo> */}
           <Button
-            loading={isLoading}
             onPress={handleSubmit}
             style={{
               padding: 10,
               backgroundColor: colors.primary,
               borderRadius: 8,
             }}
-            activeOpacity={0.8}
           >
             <Typo
               fontWeight={"500"}
@@ -91,17 +92,17 @@ const Login = () => {
               size={18}
               style={{ textAlign: "center" }}
             >
-              Login
+              Sign Up
             </Typo>
           </Button>
         </View>
         <View style={styles.footer}>
           <Typo size={15} color={colors.text}>
-            Don&apos;t have an account?
+            Already have an account?
           </Typo>
-          <TouchableOpacity onPress={()=>router.push("/register")}>
+          <TouchableOpacity onPress={()=>router.push("/login")}>
             <Typo size={15} color={colors.primary}>
-              Sign Up
+              Login
             </Typo>
           </TouchableOpacity>
         </View>
@@ -110,7 +111,7 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
 
 const styles = StyleSheet.create({
   container: {
