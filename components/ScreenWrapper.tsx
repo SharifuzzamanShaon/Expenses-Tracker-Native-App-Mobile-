@@ -12,7 +12,7 @@ import { colors } from "@/constants/theme";
 
 const { height } = Dimensions.get("window");
 const ScreenWrapper = ({ style, children }: ScreenWrapperProps) => {
-  const padding = Platform.OS === "ios" ? height * 0.6 : 40;
+  const padding = Platform.OS === "ios" ? height * 0.6 : 50;
   return (
     <View
       style={[
