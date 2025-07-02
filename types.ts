@@ -90,18 +90,18 @@ export type BackButtonProps = {
 //   [key: string]: CategoryType;
 // };
 
-export type TransactionListType = {
-  data: TransactionType[];
-  title?: string;
-  loading?: boolean;
-  emptyListMessage?: string;
-};
+// export type TransactionListType = {
+//   data: TransactionType[];
+//   title?: string;
+//   loading?: boolean;
+//   emptyListMessage?: string;
+// };
 
-export type TransactionItemProps = {
-  item: TransactionType;
-  index: number;
-  handleClick: Function;
-};
+// export type TransactionItemProps = {
+//   item: TransactionType;
+//   index: number;
+//   handleClick: Function;
+// };
 
 export interface InputProps extends TextInputProps {
   icon?: React.ReactNode;

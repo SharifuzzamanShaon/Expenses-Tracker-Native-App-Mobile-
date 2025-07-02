@@ -1,18 +1,13 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { useGlobalContext } from '@/context/authContext';
+// import { useGlobalContext } from '@/context/authContext';
 
 const Profile = () => {
-    const {user: {email, password}} = useGlobalContext();
+    // const {user} = useGlobalContext();
   return (
     <View>
       <Text>profile</Text>
-      {email && (
-        <View>
-          <Text>Email: {email}</Text>
-          <Text>Password: {password}</Text>
-        </View>
-      )}
+      
     </View>
   )
 }
