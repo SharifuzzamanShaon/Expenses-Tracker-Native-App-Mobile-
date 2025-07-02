@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { StyleSheet, View, TouchableOpacity, Alert } from "react-native";
 import React, { useRef } from "react";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Typo from "@/components/Typo";
@@ -13,11 +7,14 @@ import { verticalScale } from "@/utils/styling";
 import { colors, spacingX, spacingY } from "@/constants/theme";
 import Input from "@/components/Input";
 import { useRouter } from "expo-router";
-import {checkLoginFormData} from "@/utils/formValidator";
+import { checkLoginFormData } from "@/utils/formValidator";
 import Button from "@/components/Button"; // Assuming you have a Button component
+import { useGlobalContext } from "../../context/authContext";
+
 const Login = () => {
   // const email = useRef("");
-  // const password = useRef("");
+  // // const password = useRef("");
+  const { login } = useGlobalContext();
   const router = useRouter();
   const [loginInfo, setLoginInfo] = React.useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = React.useState(false);
@@ -29,6 +26,15 @@ const Login = () => {
       Alert.alert(errors[0]);
       return;
     } else {
+      const result = await login(loginInfo.email, loginInfo.password);
+      console.log("====================================");
+      console.log("Login Result", result);
+      console.log("====================================");
+      if (result.error) {
+        setIsLoading(false);
+        Alert.alert(result.error);
+        return;
+      }
       console.log("Login Details", {
         email: loginInfo.email,
         password: loginInfo.password,
@@ -38,6 +44,7 @@ const Login = () => {
         "Login Successful",
         `Email: ${loginInfo.email}, Password: ${loginInfo.password}`
       );
+      router.push("/profile");
     }
     setIsLoading(false);
   };
@@ -70,7 +77,9 @@ const Login = () => {
           <Input
             placeholder="Enter Your Password"
             secureTextEntry={true}
-            onChangeText={(text) => setLoginInfo({ ...loginInfo, password: text })}
+            onChangeText={(text) =>
+              setLoginInfo({ ...loginInfo, password: text })
+            }
           ></Input>
           <Typo size={14} color={colors.text} style={{ alignSelf: "flex-end" }}>
             Forgot Password?
@@ -99,7 +108,7 @@ const Login = () => {
           <Typo size={15} color={colors.text}>
             Don&apos;t have an account?
           </Typo>
-          <TouchableOpacity onPress={()=>router.push("/register")}>
+          <TouchableOpacity onPress={() => router.push("/register")}>
             <Typo size={15} color={colors.primary}>
               Sign Up
             </Typo>

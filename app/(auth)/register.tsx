@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { StyleSheet, View, TouchableOpacity, Alert } from "react-native";
 import React from "react";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Typo from "@/components/Typo";
@@ -14,30 +8,54 @@ import { colors, spacingX, spacingY } from "@/constants/theme";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
 import { useRouter } from "expo-router";
-// eslint-disable-next-line import/no-unresolved
-import  {checkRegFormData}  from "../../utils/formValidator"; // Assuming you have a utility function for form validation 
-const Register = () => {
-  // const email = useRef("");
-  // const password = useRef("");
-  const router = useRouter();
-  const [loginInfo, setLoginInfo] = React.useState({ email: "", username: "", password: "" });
-  const [loading, setLoading] = React.useState(false);
-  const handleSubmit = async () => {
-    const errors = checkRegFormData(loginInfo);
-    if (errors.length > 0) {
-      Alert.alert(errors[0]);
-      return;
-    } else {
-      console.log("Register Details", {
-        email: loginInfo.email,
-        username: loginInfo.username,
-        password: loginInfo.password,
-      });
+import Toast from "react-native-toast-message";
+import { checkRegFormData } from "../../utils/formValidator"; // Assuming you have a utility function for form validation
+import { useGlobalContext } from "../../context/authContext";
 
-      Alert.alert(
-        "Register Successful",
-        `Email: ${loginInfo.email}, Username: ${loginInfo.username}, Password: ${loginInfo.password}`
+const Register = () => {
+  const router = useRouter();
+  const [regInfo, setRegInfo] = React.useState({
+    email: "",
+    username: "",
+    password: "",
+  });
+  const [isLoading, setLoading] = React.useState(false);
+  const { register } = useGlobalContext();
+  const handleSubmit = async () => {
+    try {
+      const errors = checkRegFormData(regInfo);
+      if (errors.length > 0) {
+        Toast.show({
+          type: "error",
+          text1: `${errors[0]}`,
+        });
+        return;
+      }
+      console.log(regInfo);
+
+      const response = await register(
+        regInfo.email,
+        regInfo.username,
+        regInfo.password
       );
+      if (response.success === true) {
+        Toast.show({
+          type: "success",
+          text1: "Sgin-Up Success | Please Login",
+        });
+        router.push("/login");
+        return;
+      }
+      Toast.show({
+        type:"error",
+        text1:"Email alreay in Use, Try another one"
+      })
+    } catch (error: any) {
+      console.log("catch err", error);
+      Toast.show({
+        type:"error",
+        text1:"Something went wrong, Try again"
+      })
     }
   };
   return (
@@ -62,23 +80,24 @@ const Register = () => {
             Register now to track all your expenses
           </Typo>
           {/* /* input */}
-            <Input
+          <Input
             placeholder="Enter Your Email"
-            onChangeText={(text) => setLoginInfo({ ...loginInfo, email: text })}
+            onChangeText={(text) => setRegInfo({ ...regInfo, email: text })}
           ></Input>
           <Input
             placeholder="Enter Your Username"
-            onChangeText={(text) => setLoginInfo({ ...loginInfo, username: text })}
+            onChangeText={(text) => setRegInfo({ ...regInfo, username: text })}
           ></Input>
           <Input
             placeholder="Enter Your Password"
             secureTextEntry={true}
-            onChangeText={(text) => setLoginInfo({ ...loginInfo, password: text })}
+            onChangeText={(text) => setRegInfo({ ...regInfo, password: text })}
           ></Input>
           {/* <Typo size={14} color={colors.text} style={{ alignSelf: "flex-end" }}>
           ..
           </Typo> */}
           <Button
+            loading={isLoading}
             onPress={handleSubmit}
             style={{
               padding: 10,
@@ -100,7 +119,7 @@ const Register = () => {
           <Typo size={15} color={colors.text}>
             Already have an account?
           </Typo>
-          <TouchableOpacity onPress={()=>router.push("/login")}>
+          <TouchableOpacity onPress={() => router.push("/login")}>
             <Typo size={15} color={colors.primary}>
               Login
             </Typo>
