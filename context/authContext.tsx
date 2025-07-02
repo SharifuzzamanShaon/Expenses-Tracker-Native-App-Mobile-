@@ -1,11 +1,14 @@
 import { createContext, useContext, useState } from "react";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 // import { app, auth, firestorage } from "../config/firebase";
-import { app} from "../config/firebase"
+import { app } from "../config/firebase";
 // import { doc, setDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth"; 
+import { getAuth } from "firebase/auth";
 
-const myAuth = getAuth(app)
+const myAuth = getAuth(app);
 
 interface AuthContextType {
   user: { email: string; password: string } | null;
@@ -21,10 +24,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string) => {
     try {
       // let response = await signInWithEmailAndPassword(auth, email, password);
-      const response = await signInWithEmailAndPassword(myAuth, email, password)
-      console.log('====================================');
-      console.log('Login response:', response);
-      console.log('====================================');
+      const response = await signInWithEmailAndPassword(
+        myAuth,
+        email,
+        password
+      );
+      console.log("====================================");
+      console.log("Login response:", response);
+      console.log("====================================");
       if (!response?.user?.uid) {
         return { success: false, message: response };
       }
@@ -40,18 +47,21 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return { success: false, msg: err?.message || "Login failed" };
     }
   };
-  const register = async (email: string, username: string, password: string) => {
+  const register = async (
+    email: string,
+    username: string,
+    password: string
+  ) => {
     try {
-      let response = await createUserWithEmailAndPassword(
-        myAuth,
-        email,
-        password
-      );
-      console.log("new signup", response);
-      return { success: true };
+      let res = await createUserWithEmailAndPassword(myAuth, email, password);
+      console.log("new signup", res);
+      if (res?.user?.uid) {
+        return { success: true };
+      }
+      return { success: false };
     } catch (error: any) {
       console.log(error);
-      return { success: false, message:error.message || "Failed to Sign-Up"};
+      return { success: false, message: error.message || "Failed to Sign-Up" };
     }
   };
   return (
@@ -68,6 +78,5 @@ const useGlobalContext = () => {
   }
   return context;
 };
-
 
 export { AuthContext, useGlobalContext, AuthProvider };
