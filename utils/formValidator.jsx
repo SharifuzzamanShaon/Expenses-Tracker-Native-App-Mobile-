@@ -1,17 +1,22 @@
 export  function checkRegFormData(formData) {
+  const {email, username, password} = formData;
   const errors = [];
-  if (!formData.email || formData.email.trim() === "") {
+  if(!email || !username || !password){
+    errors.push("All fields are required");
+  }
+  if (!email || email.trim() === "") {
     errors.push("Email is required");
-  } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+  } else if (!/\S+@\S+\.\S+/.test(email)) {
     errors.push("Email is invalid");
   }
-  if (!formData.username || formData.username.trim() === "") {
+  if (!username || username.trim() === "") {
     errors.push("Username is required");
+  }else if(username.length <5 || username.length >10 ){
+    errors.push("username name should be 5 to 10 characters")
   }
-  if (!formData.password || formData.password.trim() === "") {
+  if (!password || password.trim() === "") {
     errors.push("Password is required");
   }
-  const password = formData.password;
   if (password.length < 6) {
     errors.push("Password must be at least 6 characters");
   }
@@ -21,14 +26,15 @@ export  function checkRegFormData(formData) {
 
   return errors;
 }
-export function checkLoginFormData(formData) {
+export function checkLoginFormData (formData){
+  const {email, password} = formData
   const errors = [];
-  if (!formData.email || formData.email.trim() === "") {
+  if (!email || email.trim() === "") {
     errors.push("Email is required");
-  } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+  } else if (!/\S+@\S+\.\S+/.test(email)) {
     errors.push("Email is invalid");
   }
-  if (!formData.password || formData.password.trim() === "") {
+  if (!password || password.trim() === "") {
     errors.push("Password is required")  
 }
   return errors;
