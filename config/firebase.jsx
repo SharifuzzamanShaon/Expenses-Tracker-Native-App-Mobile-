@@ -5,10 +5,11 @@ import { initializeAuth,getReactNativePersistence } from "firebase/auth";
 //   getReactNativePersistence,
 // // eslint-disable-next-line import/no-unresolved
 // } from 'firebase/auth/react-native';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getFirestore } from "firebase/firestore";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+// import { getFirestore } from "firebase/firestore";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDyQHRgPf3pC0OVWMUF7QVFqYmFy7PORbc",
+  apiKey: process.env.GOOGLE_APIKEY,
   authDomain: "expencetracker-f5932.firebaseapp.com",
   projectId: "expencetracker-f5932",
   storageBucket: "expencetracker-f5932.firebasestorage.app",
