@@ -1,14 +1,15 @@
-import { StyleSheet, View, TouchableOpacity, Alert } from "react-native";
-import React, { useRef } from "react";
+import BackButton from "@/components/BackButton";
+import Button from "@/components/Button"; // Assuming you have a Button component
+import Input from "@/components/Input";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Typo from "@/components/Typo";
-import BackButton from "@/components/BackButton";
-import { verticalScale } from "@/utils/styling";
 import { colors, spacingX, spacingY } from "@/constants/theme";
-import Input from "@/components/Input";
-import { useRouter } from "expo-router";
 import { checkLoginFormData } from "@/utils/formValidator";
-import Button from "@/components/Button"; // Assuming you have a Button component
+import { verticalScale } from "@/utils/styling";
+import { useRouter } from "expo-router";
+import React from "react";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { useGlobalContext } from "../../context/authContext";
 
 const Login = () => {
@@ -27,23 +28,24 @@ const Login = () => {
       return;
     } else {
       const result = await login(loginInfo.email, loginInfo.password);
-      console.log("====================================");
-      console.log("Login Result", result);
-      console.log("====================================");
       if (result.error) {
         setIsLoading(false);
         Alert.alert(result.error);
+        Toast.show({
+          type: "error",
+          text1:`${result.error}`
+        })
         return;
       }
       console.log("Login Details", {
         email: loginInfo.email,
         password: loginInfo.password,
       });
-
-      Alert.alert(
-        "Login Successful",
-        `Email: ${loginInfo.email}, Password: ${loginInfo.password}`
-      );
+      Toast.show({
+        type:"success",
+        text1: "Login Successs",
+        text2: "Welcome to your profile"
+      })
       router.push("/profile");
     }
     setIsLoading(false);

@@ -1,16 +1,16 @@
-import { StyleSheet, View, TouchableOpacity, Alert } from "react-native";
-import React from "react";
+import BackButton from "@/components/BackButton";
+import Button from "@/components/Button";
+import Input from "@/components/Input";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Typo from "@/components/Typo";
-import BackButton from "@/components/BackButton";
-import { verticalScale } from "@/utils/styling";
 import { colors, spacingX, spacingY } from "@/constants/theme";
-import Input from "@/components/Input";
-import Button from "@/components/Button";
+import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
+import React from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
-import { checkRegFormData } from "../../utils/formValidator"; // Assuming you have a utility function for form validation
 import { useGlobalContext } from "../../context/authContext";
+import { checkRegFormData } from "../../utils/formValidator"; // Assuming you have a utility function for form validation
 
 const Register = () => {
   const router = useRouter();
@@ -41,7 +41,8 @@ const Register = () => {
       if (response.success === true) {
         Toast.show({
           type: "success",
-          text1: "Sgin-Up Success | Please Login",
+          text1: "Sgin-Up Success",
+          text2:"Please Login "
         });
         router.push("/login");
         return;

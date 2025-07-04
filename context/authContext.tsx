@@ -1,15 +1,16 @@
-import { createContext, useContext, useState } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { createContext, useContext, useState } from "react";
 // import { app, auth, firestorage } from "../config/firebase";
 import { app } from "../config/firebase";
 // import { doc, setDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 
 const myAuth = getAuth(app);
-
+const db = getFirestore(app);
 interface AuthContextType {
   user: { email: string; password: string } | null;
   login: (email: string, password: string) => Promise<any>;
@@ -23,19 +24,19 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      // let response = await signInWithEmailAndPassword(auth, email, password);
       const response = await signInWithEmailAndPassword(
         myAuth,
         email,
         password
       );
-      console.log("====================================");
-      console.log("Login response:", response);
-      console.log("====================================");
-      if (!response?.user?.uid) {
+      const uid = response?.user?.uid
+      if (!uid) {
         return { success: false, message: response };
       }
-      if (response.user.uid) {
+      if (uid) {
+      const docRef = doc(db, "users", `${uid}`);
+      const res = (await getDoc(docRef)).data();
+      console.log("user info: ",res);
         setUser({
           email,
           password,
@@ -56,6 +57,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       let res = await createUserWithEmailAndPassword(myAuth, email, password);
       console.log("new signup", res);
       if (res?.user?.uid) {
+        await setDoc(doc(db, "users", `${res?.user?.uid}`), {
+          email,
+          username,
+          password,
+        });
         return { success: true };
       }
       return { success: false };
@@ -79,4 +85,4 @@ const useGlobalContext = () => {
   return context;
 };
 
-export { AuthContext, useGlobalContext, AuthProvider };
+export { AuthContext, AuthProvider, useGlobalContext };

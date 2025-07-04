@@ -1,6 +1,5 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { initializeAuth,getReactNativePersistence } from "firebase/auth";
 // import {
 //   getReactNativePersistence,
 // // eslint-disable-next-line import/no-unresolved
@@ -8,8 +7,15 @@ import { initializeAuth,getReactNativePersistence } from "firebase/auth";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { getFirestore } from "firebase/firestore";
 
+import Constants from 'expo-constants';
+
+const { GOOGLE_APIKEY } = Constants.expoConfig.extra;
+
+console.log('====================================');
+console.log(GOOGLE_APIKEY);
+console.log('====================================');
 const firebaseConfig = {
-  apiKey: process.env.GOOGLE_APIKEY,
+  apiKey: GOOGLE_APIKEY || "AIzaSyDyQHRgPf3pC0OVWMUF7QVFqYmFy7PORbc",
   authDomain: "expencetracker-f5932.firebaseapp.com",
   projectId: "expencetracker-f5932",
   storageBucket: "expencetracker-f5932.firebasestorage.app",
