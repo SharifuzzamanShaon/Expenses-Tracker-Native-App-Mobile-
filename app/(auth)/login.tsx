@@ -13,8 +13,6 @@ import Toast from "react-native-toast-message";
 import { useGlobalContext } from "../../context/authContext";
 
 const Login = () => {
-  // const email = useRef("");
-  // // const password = useRef("");
   const { login } = useGlobalContext();
   const router = useRouter();
   const [loginInfo, setLoginInfo] = React.useState({ email: "", password: "" });
