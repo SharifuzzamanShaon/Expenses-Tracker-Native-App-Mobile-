@@ -10,7 +10,7 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { useGlobalContext } from "../../context/authContext";
-import { checkRegFormData } from "../../utils/formValidator"; // Assuming you have a utility function for form validation
+import { checkRegFormData } from "../../utils/formValidator"; 
 
 const Register = () => {
   const router = useRouter();
@@ -31,8 +31,6 @@ const Register = () => {
         });
         return;
       }
-      console.log(regInfo);
-
       const response = await register(
         regInfo.email,
         regInfo.username,
@@ -49,13 +47,14 @@ const Register = () => {
       }
       Toast.show({
         type:"error",
-        text1:"Email alreay in Use, Try another one"
+        text1:"Email alreay in Use",
+        text2:"Try another one"
       })
     } catch (error: any) {
       console.log("catch err", error);
       Toast.show({
         type:"error",
-        text1:"Something went wrong, Try again"
+        text1:"Something went wrong! Try again"
       })
     }
   };
