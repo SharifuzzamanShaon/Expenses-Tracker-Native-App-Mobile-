@@ -20,35 +20,40 @@ const Login = () => {
   const [loginInfo, setLoginInfo] = React.useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = React.useState(false);
   const handleSubmit = async () => {
-    setIsLoading(true);
-    const errors = checkLoginFormData(loginInfo);
-    if (errors.length > 0) {
-      setIsLoading(false);
-      Alert.alert(errors[0]);
-      return;
-    } else {
-      const result = await login(loginInfo.email, loginInfo.password);
-      if (result.error) {
+    try {
+      setIsLoading(true);
+      const errors = checkLoginFormData(loginInfo);
+      if (errors.length > 0) {
         setIsLoading(false);
-        Alert.alert(result.error);
-        Toast.show({
-          type: "error",
-          text1:`${result.error}`
-        })
+        Alert.alert(errors[0]);
         return;
       }
-      console.log("Login Details", {
-        email: loginInfo.email,
-        password: loginInfo.password,
-      });
+      const result = await login(loginInfo.email, loginInfo.password);
+
+      console.log("login response", result);
+      if (result.success===false) {
+        Toast.show({
+          type: "error",
+          text1: `${result.msg}`,
+        });
+        setIsLoading(false);
+        return;
+      }
+      if( result.success===true) {
+        Toast.show({
+          type: "success",
+          text1: "Login Successful",
+        });
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setIsLoading(false);
       Toast.show({
-        type:"success",
-        text1: "Login Successs",
-        text2: "Welcome to your profile"
-      })
-      router.push("/profile");
+        type: "error",
+        text1: "Login failed. Please try again.",
+      });
     }
-    setIsLoading(false);
   };
   return (
     <ScreenWrapper>

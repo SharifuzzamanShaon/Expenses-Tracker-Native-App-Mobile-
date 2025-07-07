@@ -1,51 +1,56 @@
 import {
   createUserWithEmailAndPassword,
+  onAuthStateChanged,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 // import { app, auth, firestorage } from "../config/firebase";
-import { app } from "../config/firebase";
+import { app, myAuth } from "../config/firebase";
 // import { doc, setDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
+import { useRouter } from "expo-router";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
 
-const myAuth = getAuth(app);
 const db = getFirestore(app);
 interface AuthContextType {
-  user: { email: string; password: string } | null;
+  user: User | null;
   login: (email: string, password: string) => Promise<any>;
   register: (email: string, password: string, name: string) => Promise<any>;
+}
+interface User {
+  uid: string;
+  email: string;
+  name: string;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<AuthContextType["user"] | null>(null);
-
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+  useEffect(() => {
+    const unsub = onAuthStateChanged(myAuth, async (firebaseuser) => {
+      console.log("Firebase User info", firebaseuser);
+      if (firebaseuser) {
+        router.replace("/(tabs)");
+        // router.replace('/(tabls)');
+      } else {
+        router.replace("/welcome");
+      }
+    });
+    return () => unsub();
+  }, []);
   const login = async (email: string, password: string) => {
     try {
-      const response = await signInWithEmailAndPassword(
-        myAuth,
-        email,
-        password
-      );
-      const uid = response?.user?.uid
-      if (!uid) {
-        return { success: false, message: response };
-      }
-      if (uid) {
-      const docRef = doc(db, "users", `${uid}`);
-      const res = (await getDoc(docRef)).data();
-      console.log("user info: ",res);
-        setUser({
-          email,
-          password,
-        });
-        return { success: true, user: response.user };
-      }
+      const res = await signInWithEmailAndPassword(myAuth, email, password);
+      console.log("login res from context", res);
+
       return { success: true };
     } catch (err: any) {
-      return { success: false, msg: err?.message || "Login failed" };
+      let msg = err.message;
+      console.log("error message: ", msg);
+      if (msg.includes("(auth/invalid-credential)")) msg = "Wrong credentials";
+      if (msg.includes("(auth/invalid-email)")) msg = "Invalid email";
+      return { success: false, msg };
     }
   };
   const register = async (
@@ -67,7 +72,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return { success: false };
     } catch (error: any) {
       console.log(error);
-      return { success: false, message: error.message || "Failed to Sign-Up" };
+      let msg = error.message;
+      console.log("error message: ", msg);
+      if (msg.includes("(auth/email-already-in-use)")) msg = "Email already in use";
+      if (msg.includes("(auth/invalid-email)")) msg = "Invalid email";
+      if (msg.includes("(auth/weak-password)")) msg = "Weak password";
+      return { success: false, message: msg || "Failed to Sign-Up" };
     }
   };
   return (

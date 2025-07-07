@@ -23,6 +23,7 @@ const Register = () => {
   const { register } = useGlobalContext();
   const handleSubmit = async () => {
     try {
+      setLoading(true);
       const errors = checkRegFormData(regInfo);
       if (errors.length > 0) {
         Toast.show({
@@ -38,25 +39,28 @@ const Register = () => {
         regInfo.username,
         regInfo.password
       );
-      if (response.success === true) {
+      if (response.success === false) {
         Toast.show({
-          type: "success",
-          text1: "Sgin-Up Success",
-          text2:"Please Login "
+          type: "error",
+          text1: `${response.message}`,
         });
-        router.push("/login");
+        setLoading(false);
         return;
       }
       Toast.show({
-        type:"error",
-        text1:"Email alreay in Use, Try another one"
-      })
+        type: "success",
+        text1: "Registration Successful",
+        text2: "Welcome to Expense Tracker",
+      });
+      setLoading(false);
     } catch (error: any) {
       console.log("catch err", error);
       Toast.show({
-        type:"error",
-        text1:"Something went wrong, Try again"
-      })
+        type: "error",
+        text1: "Something went wrong, Try again",
+      });
+      setLoading(false);
+      return;
     }
   };
   return (
