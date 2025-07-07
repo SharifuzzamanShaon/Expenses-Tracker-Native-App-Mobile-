@@ -8,6 +8,7 @@ import { initializeApp } from "firebase/app";
 // import { getFirestore } from "firebase/firestore";
 
 import Constants from 'expo-constants';
+import { getAuth } from "firebase/auth";
 
 const { GOOGLE_APIKEY } = Constants.expoConfig.extra;
 
@@ -26,6 +27,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
+export const myAuth= getAuth(app);
 // const analytics = getAnalytics(app);
 
 // //authentication
