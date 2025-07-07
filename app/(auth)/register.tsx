@@ -10,7 +10,7 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { useGlobalContext } from "../../context/authContext";
-import { checkRegFormData } from "../../utils/formValidator"; 
+import { checkRegFormData } from "../../utils/formValidator";
 
 const Register = () => {
   const router = useRouter();
@@ -23,6 +23,7 @@ const Register = () => {
   const { register } = useGlobalContext();
   const handleSubmit = async () => {
     try {
+      setLoading(true);
       const errors = checkRegFormData(regInfo);
       if (errors.length > 0) {
         Toast.show({
@@ -36,26 +37,28 @@ const Register = () => {
         regInfo.username,
         regInfo.password
       );
-      if (response.success === true) {
+      if (response.success === false) {
         Toast.show({
-          type: "success",
-          text1: "Sgin-Up Success",
-          text2:"Please Login "
+          type: "error",
+          text1: `${response.message}`,
         });
-        router.push("/login");
+        setLoading(false);
         return;
       }
       Toast.show({
-        type:"error",
-        text1:"Email alreay in Use",
-        text2:"Try another one"
-      })
+        type: "success",
+        text1: "Registration Successful",
+        text2: "Welcome to Expense Tracker",
+      });
+      setLoading(false);
     } catch (error: any) {
       console.log("catch err", error);
       Toast.show({
-        type:"error",
-        text1:"Something went wrong! Try again"
-      })
+        type: "error",
+        text1: "Something went wrong, Try again",
+      });
+      setLoading(false);
+      return;
     }
   };
   return (
