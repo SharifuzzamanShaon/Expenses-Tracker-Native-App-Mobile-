@@ -13,8 +13,6 @@ import Toast from "react-native-toast-message";
 import { useGlobalContext } from "../../context/authContext";
 
 const Login = () => {
-  // const email = useRef("");
-  // // const password = useRef("");
   const { login } = useGlobalContext();
   const router = useRouter();
   const [loginInfo, setLoginInfo] = React.useState({ email: "", password: "" });
@@ -71,12 +69,10 @@ const Login = () => {
         <Typo size={30} fontWeight={"800"}>
           Welcome Back
         </Typo>
-        {/* form */}
         <View style={styles.form}>
           <Typo size={16} color={colors.textLighter}>
             Login now to track all your expenses
           </Typo>
-          {/* /* input */}
           <Input
             placeholder="Enter Your Email"
             onChangeText={(text) => setLoginInfo({ ...loginInfo, email: text })}
