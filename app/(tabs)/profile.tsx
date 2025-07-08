@@ -1,35 +1,125 @@
-import Button from "@/components/Button";
 import Header from "@/components/Header";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Typo from "@/components/Typo";
 import { myAuth } from "@/config/firebase";
 import { colors } from "@/constants/theme";
 import { useGlobalContext } from "@/context/authContext";
+import { accountOptionType } from "@/types";
 import { signOut } from "firebase/auth";
+import * as Icons from "phosphor-react-native"; // Ensure you have this package installed
 import React from "react";
-import { StyleSheet, View } from "react-native";
-
+import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import Animated, { SlideInDown } from "react-native-reanimated";
 const Profile = () => {
   const { user } = useGlobalContext();
-  // const {user} = useGlobalContext();
-  console.log('====================================');
-  console.log('user from profile', user);
-  console.log('====================================');
+  const accountOptions: accountOptionType[] = [
+    {
+      title: "Edit Profile",
+      icon: <Icons.User size={26} color={colors.white} weight="fill" />,
+      routeName: "/(modals)/profileModal",
+      bgColor: "#a3e635",
+    },
+    {
+      title: "Settings",
+      icon: <Icons.GearSix size={26} color={colors.white} weight="fill" />,
+      routeName: "/(modals)/profileModal",
+      bgColor: "#f59e0b",
+    },
+    {
+      title: "Privacy",
+      icon: <Icons.LockKey size={26} color={colors.white} weight="fill" />,
+      routeName: "/(modals)/profileModal",
+      bgColor: "#6366f1",
+    },
+    {
+      title: "Logout",
+      icon: <Icons.SignOut size={26} color={colors.white} weight="fill" />,
+      routeName: "/(modals)/profileModal",
+      bgColor: "red",
+    },
+  ];
+  const handlePress = (title: string) => {
+    if (title === "Logout") {
+      Alert.alert(
+        "Logout",
+        "Are you sure you want to Logout?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "OK",
+            onPress: handleLogout,
+          },
+        ],
+        { cancelable: false }
+      );
+    } else if (title === "Edit Profile") {
+      console.log("Navigate to Edit Profile Modal");
+    } else {
+    }
+  };
   const handleLogout = async () => {
     await signOut(myAuth);
   };
   return (
     <ScreenWrapper>
       <Header title="Profile" />
-      <Typo style={{ padding: 20 }} fontWeight={500} size={16}>
-        {`${user?.name || user?.email}`}
-      </Typo>
-      <View style={styles.container}>
-        <Button onPress={handleLogout}>
-          <Typo color={colors.white} fontWeight={500} size={16}>
-            Logout
-          </Typo>
-        </Button>
+      <View style={styles.profileInfo}>
+        <Image
+          source={{
+            uri:
+              user?.image ||
+              "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
+          }}
+          style={styles.profileImage}
+        />
+        <Typo style={{}} fontWeight={500} size={20}>
+          {`${user?.name || user?.email}`}
+        </Typo>
+
+        <Typo style={{ color: colors.neutral400 }} fontWeight={400} size={16}>
+          {` ${user?.email}`}
+        </Typo>
+      </View>
+      {/* Account Options */}
+      <View style={styles.accountOptions}>
+        {accountOptions.map((item, index) => {
+          return (
+            <Animated.View
+              entering={SlideInDown.delay(index * 200)
+                .springify()
+                .damping(14)}
+              style={styles.listItem}
+              key={index}
+            >
+              <TouchableOpacity
+                style={styles.flexRow}
+                onPress={() => handlePress(item.title)}
+              >
+                <View
+                  style={[
+                    styles.listIcon,
+                    {
+                      backgroundColor: item?.bgColor,
+                    },
+                  ]}
+                >
+                  {item.icon}
+                </View>
+                <Typo size={16} style={{ flex: 1 }} fontWeight={"500"}>
+                  {item.title}
+                </Typo>
+                <Icons.CaretRight
+                  size={20}
+                  weight="bold"
+                  color={colors.white}
+                />
+              </TouchableOpacity>
+            </Animated.View>
+          );
+        })}
       </View>
     </ScreenWrapper>
   );
@@ -38,14 +128,57 @@ const Profile = () => {
 export default Profile;
 
 const styles = StyleSheet.create({
-  container: {
+  profileInfo: {
+    flex: 1,
+    paddingBlock: 5,
+    marginBottom: 40,
+    alignItems: "center",
+  },
+  logoutBtn: {
     flex: 1,
     justifyContent: "flex-end",
     padding: 20,
-    // alignItems: "center",
   },
   buttonText: {
     color: colors.white,
     fontWeight: "bold",
   },
+  profileImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    borderColor: colors.primary,
+    borderWidth: 4,
+    marginBottom: 20,
+    alignSelf: "center",
+    marginTop: 20,
+  },
+  accountOptions: {
+    flex: 1,
+    padding: 10,
+  },
+  listItem: {
+    backgroundColor: colors.neutral800,
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 5,
+    marginHorizontal: 10,
+  },
+  flexRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  listIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+  },
 });
+// (Removed duplicate handleLogout function)
+function handleLogout(): void {
+  throw new Error("Function not implemented.");
+}
