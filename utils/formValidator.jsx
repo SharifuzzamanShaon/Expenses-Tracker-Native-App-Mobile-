@@ -17,12 +17,12 @@ export  function checkRegFormData(formData) {
   if (!password || password.trim() === "") {
     errors.push("Password is required");
   }
-  if (password.length < 6) {
-    errors.push("Password must be at least 6 characters");
-  }
-  if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/.test(password)) {
-    errors.push("Password must contain at least 1 uppercase, 1 special character");
-  }
+  // if (password.length < 6) {
+  //   errors.push("Password must be at least 6 characters");
+  // }
+  // if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/.test(password)) {
+  //   errors.push("Password must contain at least 1 uppercase, 1 special character");
+  // }
 
   return errors;
 }
