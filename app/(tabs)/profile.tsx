@@ -5,6 +5,7 @@ import { myAuth } from "@/config/firebase";
 import { colors } from "@/constants/theme";
 import { useGlobalContext } from "@/context/authContext";
 import { accountOptionType } from "@/types";
+import { useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
 import * as Icons from "phosphor-react-native"; // Ensure you have this package installed
 import React from "react";
@@ -12,6 +13,7 @@ import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, { SlideInDown } from "react-native-reanimated";
 const Profile = () => {
   const { user } = useGlobalContext();
+  const router = useRouter()
   const accountOptions: accountOptionType[] = [
     {
       title: "Edit Profile",
@@ -22,24 +24,24 @@ const Profile = () => {
     {
       title: "Settings",
       icon: <Icons.GearSix size={26} color={colors.white} weight="fill" />,
-      routeName: "/(modals)/profileModal",
+      routeName: "/(modals)/settings",
       bgColor: "#f59e0b",
     },
     {
       title: "Privacy",
       icon: <Icons.LockKey size={26} color={colors.white} weight="fill" />,
-      routeName: "/(modals)/profileModal",
+      routeName: "/(modals)/privacy",
       bgColor: "#6366f1",
     },
     {
       title: "Logout",
       icon: <Icons.SignOut size={26} color={colors.white} weight="fill" />,
-      routeName: "/(modals)/profileModal",
+      routeName: "",
       bgColor: "red",
     },
   ];
-  const handlePress = (title: string) => {
-    if (title === "Logout") {
+  const handlePress = (item: accountOptionType) => {
+    if (item?.title === "Logout") {
       Alert.alert(
         "Logout",
         "Are you sure you want to Logout?",
@@ -55,17 +57,17 @@ const Profile = () => {
         ],
         { cancelable: false }
       );
-    } else if (title === "Edit Profile") {
-      console.log("Navigate to Edit Profile Modal");
-    } else {
-    }
+    } 
+     if (item.routeName === "/(modals)/profileModal") {
+        router.push("/(modals)/profileModal")
+    } 
   };
   const handleLogout = async () => {
     await signOut(myAuth);
   };
   return (
     <ScreenWrapper>
-      <Header title="Profile" />
+      <Header title="Profile" leftIcon={""} />
       <View style={styles.profileInfo}>
         <Image
           source={{
@@ -90,13 +92,13 @@ const Profile = () => {
             <Animated.View
               entering={SlideInDown.delay(index * 200)
                 .springify()
-                .damping(14)}
+                .damping(20)}
               style={styles.listItem}
               key={index}
             >
               <TouchableOpacity
                 style={styles.flexRow}
-                onPress={() => handlePress(item.title)}
+                onPress={() => handlePress(item)}
               >
                 <View
                   style={[
