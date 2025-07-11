@@ -6,15 +6,16 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { createContext, useContext, useEffect, useState } from "react";
-import { app, myAuth } from "../config/firebase";
+import { firestorage, myAuth } from "../config/firebase";
 
-const db = getFirestore(app);
+
 interface AuthContextType {
   user: UserType | null;
   login: (email: string, password: string) => Promise<any>;
   register: (email: string, password: string, name: string) => Promise<any>;
+  updateUserData:{}
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -26,12 +27,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const unsub = onAuthStateChanged(myAuth, async (firebaseuser) => {
       console.log("firebase user", firebaseuser?.displayName);
       if (firebaseuser) {
-        setUser({
-          uid: firebaseuser.uid,
-          email: firebaseuser?.email || "",
-          name: firebaseuser?.displayName || "",
-          image: firebaseuser?.photoURL || null,
-        });
+        // setUser({
+        //   uid: firebaseuser.uid,
+        //   email: firebaseuser?.email || "",
+        //   name: firebaseuser?.displayName || "",
+        //   image: firebaseuser?.photoURL || null,
+        // });
         console.log("User logged in ,,,,", user);
         
         // await updateUserData(firebaseuser.uid);
@@ -46,16 +47,22 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const res = await signInWithEmailAndPassword(myAuth, email, password);
       console.log("login res from context==>", res);
+
       if (res?.user?.uid) {
-        setUser({
-          uid: res.user.uid,
-          email: res.user.email || "",
-          name: res.user.displayName || "",
-        });
-        await updateUserData(res.user.uid);
-        console.log("User data updated on login :", user);
+        const docRef = doc(firestorage, "users", res?.user?.uid);
+      const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+        const data = docSnap.data();
+        const userData: UserType = {
+          uid: data?.uid,
+          email: data.email || null,
+          name: data.name || null,
+          image: data.image || null,
+        };
+        setUser({ ...userData });
       }
-      return { success: true };
+        return { success: true };
+      }
     } catch (err: any) {
       let msg = err.message;
       console.log("error message: ", msg);
@@ -76,7 +83,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await updateProfile(res.user, {
           displayName: username
         });
-        await setDoc(doc(db, "users", `${res?.user?.uid}`), {
+        await setDoc(doc(firestorage, "users", `${res?.user?.uid}`), {
           email,
           username,
           password,
@@ -106,8 +113,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
   const updateUserData = async (uid: string) => {
     try {
-      const docRef = doc(db, "users", uid);
+      const docRef = doc(firestorage, "users", uid);
       const docSnap = await getDoc(docRef);
+      console.log("okkk:",docSnap);
+      
       if (docSnap.exists()) {
         const data = docSnap.data();
         const userData: UserType = {
@@ -124,7 +133,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
   return (
-    <AuthContext.Provider value={{ user, login, register }}>
+    <AuthContext.Provider value={{ user, login, register, updateUserData }}>
       {children}
     </AuthContext.Provider>
   );
