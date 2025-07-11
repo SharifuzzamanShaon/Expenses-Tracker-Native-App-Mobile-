@@ -1,18 +1,13 @@
-import { Href } from "expo-router";
 // import { Firestore, Timestamp } from "firebase/firestore";
 // import { Icon } from "phosphor-react-native";
 import React, { ReactNode } from "react";
 import {
-  ActivityIndicator,
-  ActivityIndicatorProps,
-  ImageStyle,
-  PressableProps,
   TextInput,
   TextInputProps,
   TextProps,
   TextStyle,
   TouchableOpacityProps,
-  ViewStyle,
+  ViewStyle
 } from "react-native";
 
 export type ScreenWrapperProps = {
@@ -136,6 +131,7 @@ export type UserType = {
 } | null;
 
 export type UserDataType = {
+  uid:string
   name: string;
   image?: any;
 };
