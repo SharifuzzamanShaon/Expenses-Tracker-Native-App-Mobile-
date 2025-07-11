@@ -9,6 +9,7 @@ import { initializeApp } from "firebase/app";
 
 import Constants from 'expo-constants';
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const { GOOGLE_APIKEY } = Constants.expoConfig.extra;
 
@@ -28,12 +29,5 @@ const firebaseConfig = {
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 export const myAuth= getAuth(app);
-// const analytics = getAnalytics(app);
 
-// //authentication
-// export const auth = initializeAuth(app, {
-//   persistence: getReactNativePersistence(AsyncStorage), // Use React Native persistence
-// });
-
-// //db
-// export const firestorage = getFirestore(app);
+export const firestorage = getFirestore(app);
