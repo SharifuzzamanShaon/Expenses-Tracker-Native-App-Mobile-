@@ -7,8 +7,10 @@ import Typo from "@/components/Typo";
 import { colors, spacingX, spacingY } from "@/constants/theme";
 import { useGlobalContext } from "@/context/authContext";
 import { updateUser } from "@/context/userService";
+import { getProfileImage } from "@/services/ImageService";
 import { UserDataType } from "@/types";
 import { scale, verticalScale } from "@/utils/styling";
+import * as ImagePicker from "expo-image-picker";
 import * as Icon from "phosphor-react-native";
 import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -16,24 +18,21 @@ import Toast from "react-native-toast-message";
 const ProfileModal = () => {
   const { user, updateUserData } = useGlobalContext();
   const [loading, setLoading] = useState(false);
-  console.log("user on frolie edit", user);
 
   const [userData, setUserData] = useState<UserDataType>({
     uid: "",
     name: "",
-    image: null,
+    image: "",
   });
   useEffect(() => {
     setUserData({
       uid: user?.uid || "",
       name: user?.name || "",
-      image: user?.image || null,
+      image: user?.image || "",
     });
   }, [user]);
   const onSubmit = async () => {
     setLoading(true);
-    console.log("Update user btn");
-
     if (!userData.name.trim()) {
       Toast.show({
         type: "error",
@@ -49,26 +48,38 @@ const ProfileModal = () => {
       }
       Toast.show({
         type: "success",
-        text1: "Name is update",
+        text1: "Profile is updated",
       });
       setLoading(false);
       return;
+    } else {
     }
     setLoading(false);
     return;
   };
+  const onPickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      // allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.5,
+    });
+
+    if (!result.canceled) {
+      setUserData({ ...userData, image: result.assets[0] });
+    }
+  };
+
   return (
     <ModalWrapper>
       <View style={styles.container}>
         <Header title="Update Profile" leftIcon={<BackButton />} />
         <View style={styles.avatarContainer}>
           <Image
-            source={{
-              uri: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
-            }}
+            source={getProfileImage(userData.image)}
             style={styles.avatar}
           />
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onPickImage}>
             <Icon.PencilIcon style={styles.editIcon}></Icon.PencilIcon>
           </TouchableOpacity>
         </View>
@@ -124,7 +135,7 @@ const styles = StyleSheet.create({
   },
   avatar: {
     alignSelf: "center",
-    backgroundColor: colors.neutral300,
+    // backgroundColor: colors.neutral300,
     height: verticalScale(135),
     width: verticalScale(135),
     borderRadius: 200,
