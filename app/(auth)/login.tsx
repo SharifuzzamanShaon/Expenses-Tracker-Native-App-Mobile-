@@ -8,7 +8,7 @@ import { checkLoginFormData } from "@/utils/formValidator";
 import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { useGlobalContext } from "../../context/authContext";
 
@@ -23,12 +23,12 @@ const Login = () => {
       const errors = checkLoginFormData(loginInfo);
       if (errors.length > 0) {
         setIsLoading(false);
-        Alert.alert(errors[0]);
-        return;
+        Toast.show({
+          type: "error",
+          text1:`${errors[0]}`
+        })
       }
       const result = await login(loginInfo.email, loginInfo.password);
-
-      console.log("login response", result);
       if (result.success===false) {
         Toast.show({
           type: "error",
