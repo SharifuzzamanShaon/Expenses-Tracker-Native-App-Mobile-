@@ -6,9 +6,9 @@ import { Image, StyleSheet, View } from 'react-native'
 const Index = () => {
   const router = useRouter()
   useEffect(() => {
-    // setTimeout(() => {
-    //   router.push('/welcome')
-    // }, 2000);
+    setTimeout(() => {
+      router.push('/welcome')
+    }, 1000);
   }, []);
 
   return (
