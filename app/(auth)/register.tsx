@@ -52,7 +52,6 @@ const Register = () => {
       });
       setLoading(false);
     } catch (error: any) {
-      console.log("catch err", error);
       Toast.show({
         type: "error",
         text1: "Something went wrong, Try again",
