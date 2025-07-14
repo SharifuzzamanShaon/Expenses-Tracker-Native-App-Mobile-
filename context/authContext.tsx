@@ -25,7 +25,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   useEffect(() => {
     const unsub = onAuthStateChanged(myAuth, async (firebaseuser) => {
-      console.log("firebase user", firebaseuser?.displayName);
+      // console.log("firebase user", firebaseuser?.displayName);
       if (firebaseuser) {
         // setUser({
         //   uid: firebaseuser.uid,
@@ -33,7 +33,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         //   name: firebaseuser?.displayName || "",
         //   image: firebaseuser?.photoURL || null,
         // });
-        console.log("User logged in ,,,,", user);
+        // console.log("User logged in ,,,,", user);
         
         // await updateUserData(firebaseuser.uid);
         router.replace("/(tabs)");
@@ -46,7 +46,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string) => {
     try {
       const res = await signInWithEmailAndPassword(myAuth, email, password);
-      console.log("login res from context==>", res);
+      // console.log("login res from context==>", res);
 
       if (res?.user?.uid) {
         const docRef = doc(firestorage, "users", res?.user?.uid);
@@ -65,7 +65,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } catch (err: any) {
       let msg = err.message;
-      console.log("error message: ", msg);
       if (msg.includes("(auth/invalid-credential)")) msg = "Wrong credentials";
       if (msg.includes("(auth/invalid-email)")) msg = "Invalid email";
       return { success: false, msg };
@@ -78,7 +77,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   ) => {
     try {
       let res = await createUserWithEmailAndPassword(myAuth, email, password);
-      console.log("new signup", res);
       if (res?.user?.uid) {
         await updateProfile(res.user, {
           displayName: username
@@ -95,15 +93,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           name: username,
         });
         await updateUserData(res.user.uid);
-        console.log("User data updated on reg. :", user);
         return { success: true };
 
       }
       return { success: false };
     } catch (error: any) {
-      console.log(error);
       let msg = error.message;
-      console.log("error message: ", msg);
       if (msg.includes("(auth/email-already-in-use)"))
         msg = "Email already in use";
       if (msg.includes("(auth/invalid-email)")) msg = "Invalid email";
@@ -115,7 +110,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const docRef = doc(firestorage, "users", uid);
       const docSnap = await getDoc(docRef);
-      console.log("okkk:",docSnap);
       
       if (docSnap.exists()) {
         const data = docSnap.data();
