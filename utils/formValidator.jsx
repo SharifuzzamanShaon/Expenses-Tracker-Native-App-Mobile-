@@ -29,6 +29,9 @@ export  function checkRegFormData(formData) {
 export function checkLoginFormData (formData){
   const {email, password} = formData
   const errors = [];
+  if(!email || !password){
+    errors.push("All fields are required")
+  }
   if (!email || email.trim() === "") {
     errors.push("Email is required");
   } else if (!/\S+@\S+\.\S+/.test(email)) {
