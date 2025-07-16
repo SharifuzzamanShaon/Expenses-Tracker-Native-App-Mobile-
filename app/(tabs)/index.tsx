@@ -1,32 +1,82 @@
-import Button from '@/components/Button'
-import Header from '@/components/Header'
-import ScreenWrapper from '@/components/ScreenWrapper'
-import Typo from '@/components/Typo'
-import { colors } from '@/constants/theme'
-import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import HomeCard from "@/components/HomeCard";
+import ScreenWrapper from "@/components/ScreenWrapper";
+import TransactionList from "@/components/TransactionList";
+import Typo from "@/components/Typo";
+import { colors, spacingX, spacingY } from "@/constants/theme";
+import { useGlobalContext } from "@/context/authContext";
+import { verticalScale } from "@/utils/styling";
+import * as Icons from "phosphor-react-native";
+import React from "react";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
-const index = () => {
+const Index = () => {
+  const { user } = useGlobalContext();
   return (
     <ScreenWrapper>
-      <Header title="Home" />
-      <Typo>index</Typo>
-            <View style={styles.logoutBtn}>
-              <Button  onPress={() => {}} style={{ backgroundColor: colors.primary }}>
-                <Typo color={colors.white} fontWeight={500} size={16}>
-                  Logout
-                </Typo>
-              </Button>
-            </View>
+      <View style={styles.container}>
+        {/* header */}
+        <View style={styles.header}>
+          <View style={{ gap: 4 }}>
+            <Typo size={16} color={colors.neutral400}>
+              Hello,
+            </Typo>
+            <Typo size={20} fontWeight={"500"}>
+              {user?.name}
+            </Typo>
+          </View>
+          <TouchableOpacity style={styles.searchIcon}>
+            <Icons.MagnifyingGlass
+              size={verticalScale(22)}
+              // color={colors.neutral200)
+              weight="bold"
+            />
+          </TouchableOpacity>
+        </View>
+        <ScrollView
+          contentContainerStyle={styles.scrollViewStyle}
+          showsVerticalScrollIndicator={false}
+        >
+          <View>
+            <HomeCard />
+          </View>
+          <TransactionList></TransactionList>
+        </ScrollView>
+      </View>
     </ScreenWrapper>
-  )
-}
+  );
+};
 
-export default index
+export default Index;
 
 const styles = StyleSheet.create({
-  logoutBtn: {
+  container: {
     flex: 1,
-    justifyContent: "flex-end",
-    padding: 20,
-  },})
+    paddingHorizontal: spacingX._20,
+    marginTop: verticalScale(8),
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: spacingY._10,
+  },
+  searchIcon: {
+    backgroundColor: colors.neutral700,
+    padding: spacingX._10,
+    borderRadius: 50,
+  },
+  floatingButton: {
+    height: verticalScale(50),
+    width: verticalScale(50),
+    borderRadius: 100,
+    position: "absolute",
+    bottom: verticalScale(30),
+    right: verticalScale(30),
+  },
+
+  scrollViewStyle: {
+    marginTop: spacingY._10,
+    paddingBottom: verticalScale(100),
+    gap: spacingY._25,
+  },
+});
