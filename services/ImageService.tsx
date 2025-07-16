@@ -25,7 +25,7 @@ export const uploadFileToCloudinary = async (
           "Content-Type": "multipart/form-data",
         },
       });
-      
+
       if (response) return { success: true, data: response?.data?.secure_url };
     }
     return { success: false, msg: "Invalid file input." };
@@ -40,4 +40,9 @@ export const getProfileImage = (file: any) => {
   return require("../assets/images/defaultAvatar.png");
 };
 
-export const getFilePath = (file: any): any => {};
+export const getFilePath = (file: any): any => {
+  if (file && typeof file === "string") return { uri: file };
+  if (file && typeof file === "object" && file.uri) return { uri: file.uri };
+    return null
+
+};
