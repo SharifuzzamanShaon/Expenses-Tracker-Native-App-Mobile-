@@ -6,43 +6,128 @@ import Input from "@/components/Input";
 import ModalWrapper from "@/components/ModalWrapper";
 import Typo from "@/components/Typo";
 import { colors, spacingX, spacingY } from "@/constants/theme";
-import { UserDataType } from "@/types";
+import { useGlobalContext } from "@/context/authContext";
+import { create0rUpdateWallet, deleteWallet } from "@/services/walletService";
+import { WalletType } from "@/types";
 import { scale, verticalScale } from "@/utils/styling";
-import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import * as Icons from "phosphor-react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, StyleSheet, View } from "react-native";
+import Toast from "react-native-toast-message";
+
 const WalletModal = () => {
-   
   const [loading, setLoading] = useState(false);
-   
-  const [userData, setUserData] = useState<UserDataType>({
+  const { user } = useGlobalContext();
+  const router = useRouter();
+  const [wallet, setWallet] = useState<WalletType>({
     name: "",
     image: null,
   });
-  
+  const oldWalltet: { id: string; name: string; image: string } =
+    useLocalSearchParams();
+  useEffect(() => {
+    if (oldWalltet?.id) {
+      setWallet({
+        name: oldWalltet.name,
+        image: oldWalltet.image,
+      });
+    }
+  }, []);
+  const onSubmit = async () => {
+    setLoading(true);
+    const { name, image } = wallet;
+    if (!name.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Must contain name length min 6 char",
+      });
+      setLoading(false);
+      return;
+    }
+    let data: WalletType = {
+      uid: user?.uid,
+      name: name,
+      image: image,
+    };
+    if (oldWalltet?.id) data.id = oldWalltet?.id;
+
+    setLoading(true);
+    const res = await create0rUpdateWallet(data);
+    if (res.success) {
+      router.back();
+      Toast.show({
+        type: "success",
+        text1: oldWalltet?.id ? "Wallet Updated" : "Wallet is Created",
+      });
+      setLoading(false);
+      return;
+    } else {
+    }
+    setLoading(false);
+    return;
+  };
+  const onDelete = async() => {
+    if (!oldWalltet?.id) return;
+    setLoading(true);
+    const res= await deleteWallet(oldWalltet?.id);
+
+    setLoading(false);
+    if(res.success){
+      router.back()
+    }else{
+      Alert.alert("Fiald", "Failed to delete")
+    }
+  };
+  const hanldeDeleteWallet = () => {
+    Alert.alert("Delete Wallte", "Are you sure to delete this wallet", [
+      { text: "cancel", style: "cancel" },
+      { text: "Delete", style: "destructive", onPress: () => onDelete() },
+    ]);
+  };
   return (
     <ModalWrapper>
       <View style={styles.container}>
-        <Header title="New Wallet" leftIcon={<BackButton />} />
+        <Header
+          title={oldWalltet.id ? "Update Wallet" : "New Wallet"}
+          leftIcon={<BackButton />}
+        />
 
         <View style={styles.inputContainer}>
           <Typo color={colors.neutral200}>Wallet Name</Typo>
           <Input
             placeholder="Name"
-            value={userData.name}
-            onChangeText={(value) => setUserData({ ...userData, name: value })}
+            value={wallet.name}
+            onChangeText={(value) => setWallet({ ...wallet, name: value })}
           />
-           <Typo color={colors.neutral200}>Wallet Icon</Typo>
-            <ImageUpload placeholder="Upload Image" onClear={()=>{}} onSelect={()=>{}}/>
+          <Typo color={colors.neutral200}>Wallet Icon</Typo>
+          <ImageUpload
+            placeholder="Upload Image"
+            onClear={() => setWallet({ ...wallet, image: null })}
+            onSelect={(file) => setWallet({ ...wallet, image: file })}
+            file={wallet.image}
+          />
         </View>
       </View>
       <View style={styles.footer}>
+        {oldWalltet.id && !loading && (
+          <Button
+            onPress={hanldeDeleteWallet}
+            style={{
+              backgroundColor: colors.rose,
+              paddingHorizontal: spacingX._15,
+            }}
+          >
+            <Icons.Trash color={colors.white}></Icons.Trash>
+          </Button>
+        )}
         <Button
-          onPress={() => {}}
+          onPress={onSubmit}
           style={{ backgroundColor: colors.primary, flex: 1 }}
           loading={loading}
         >
-          <Typo color={colors.white} fontWeight={500} size={16}>
-            Updata
+          <Typo color={colors.black} fontWeight={500} size={16}>
+            {oldWalltet?.id ? "Update" : "Add Wallet"}
           </Typo>
         </Button>
       </View>
@@ -103,7 +188,7 @@ const styles = StyleSheet.create({
     padding: spacingY._15,
   },
   inputContainer: {
-    marginTop:30,
+    marginTop: 30,
     gap: spacingY._10,
   },
 });
